@@ -217,10 +217,7 @@ def cancel_action(message):
     """Отмена текущего действия"""
     bot.send_message(message.chat.id, "❌ Действие отменено", reply_markup=main_menu(message.from_user.id))
 
-# ==================== АДМИН-ПАНЕЛЬ
-
-
-====================
+# ==================== АДМИН-ПАНЕЛЬ====================
 
 @bot.message_handler(func=lambda m: m.text == "🛠 Админ-панель" and is_admin(m.from_user.id))
 def admin_menu(message):
