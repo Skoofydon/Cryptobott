@@ -114,8 +114,8 @@ def get_pending_requests() -> List[Tuple]:
 
 
 rows = c.fetchall()
-    conn.close()
-    return rows
+conn.close()
+return rows
 
 def mark_request_done(req_id: int) -> bool:
     """Отмечает заявку как выполненную"""
