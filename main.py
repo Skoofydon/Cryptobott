@@ -117,10 +117,7 @@ def deposit_info(message):
 
 После проверки чека администратор зачислит USDT на ваш внутренний баланс.
 """
-    bot.send_message(message.chat
-
-
-.id, text, parse_mode="Markdown")
+    bot.send_message(message.chat.id, text, parse_mode="Markdown")
 
 @bot.message_handler(func=lambda m: m.text == "📤 Вывести")
 def withdraw_start(message):
@@ -154,10 +151,9 @@ def process_withdraw_amount(message):
         user_id = message.from_user.id
         balance = db.get_balance(user_id)
         
-        # Расчет комиссии 5%
         fee = amount * WITHDRAW_FEE_PERCENT / 100
-        total_debit = amount + fee  # Списываем с баланса сумму + комиссия
-        user_receives = amount      # Пользователь получает сумму без комиссии
+        total_debit = amount + fee
+        user_receives = amount
         
         if balance < total_debit:
             bot.send_message(message.chat.id, 
@@ -193,19 +189,16 @@ def confirm_withdraw(message, amount, user_receives, fee):
     user_id = message.from_user.id
     total_debit = amount + fee
     
-    # Списываем с баланса
     if not db.subtract_balance(user_id, total_debit, f"Вывод {user_receives} USDT (комиссия {fee})"):
         bot.send_message(message.chat.id, "❌ Ошибка списания", reply_markup=main_menu(user_id))
         return
     
-    # Создаем заявку
     req_id = db.add_withdraw_request(user_id, user_receives, f"Вывод {user_receives} USDT")
     
     bot.send_message(message.chat.id, 
         f"✅ Заявка на вывод {user_receives} USDT создана.\nС баланса списано: {total_debit} USDT\nОжидайте чек от администратора.",
         reply_markup=main_menu(user_id))
     
-    # Уведомление админам
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("✅ Выдал чек", callback_data=f"done_withdraw_{req_id}_{user_id}_{user_receives}"))
     
@@ -222,14 +215,12 @@ def confirm_withdraw(message, amount, user_receives, fee):
 @bot.message_handler(func=lambda m: m.text == "❌ Отмена")
 def cancel_action(message):
     """Отмена текущего действия"""
-    bot.send_message(message.chat.id, "❌ Действие отменено", 
-                     reply_markup=main_menu(message.from_user.id))
-
-
-n(message):
     bot.send_message(message.chat.id, "❌ Действие отменено", reply_markup=main_menu(message.from_user.id))
 
-# ==================== АДМИН-ПАНЕЛЬ ====================
+# ==================== АДМИН-ПАНЕЛЬ
+
+
+====================
 
 @bot.message_handler(func=lambda m: m.text == "🛠 Админ-панель" and is_admin(m.from_user.id))
 def admin_menu(message):
@@ -286,7 +277,6 @@ def done_withdraw(call):
     user_id = int(user_id)
     amount = float(amount)
     
-    # Создаем чек для пользователя
     check_link = create_usdt_check(amount, user_id)
     
     if not check_link:
