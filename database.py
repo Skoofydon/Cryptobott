@@ -107,10 +107,7 @@ def get_all_users() -> List[Tuple]:
     """Возвращает всех пользователей (для админа)"""
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    c.execute("SELECT user_id, balance, created_
-
-
-at FROM users ORDER BY balance DESC")
+    c.execute("SELECT user_id, balance, created_at FROM users ORDER BY balance DESC")
     rows = c.fetchall()
     conn.close()
     return rows
