@@ -220,7 +220,10 @@ def confirm_withdraw(message, amount, user_receives, fee):
     )
 
 @bot.message_handler(func=lambda m: m.text == "❌ Отмена")
-def cancel_actio
+def cancel_action(message):
+    """Отмена текущего действия"""
+    bot.send_message(message.chat.id, "❌ Действие отменено", 
+                     reply_markup=main_menu(message.from_user.id))
 
 
 n(message):
